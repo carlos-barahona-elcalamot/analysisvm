@@ -1,0 +1,85 @@
+#!/bin/python3
+
+import subprocess as s
+import json
+import os
+import shutil
+
+linux_folders=["bin","boot","dev","etc","home","lib","mnt","opt","proc","root","run","sbin","sys","tmp","usr","var"]
+alpine_scripts=[
+"setup-acf",
+"setup-alpine",
+"setup-apkcache",
+"setup-apkrepos",
+"setup-bootable",
+"setup-desktop",
+"setup-devd",
+"setup-disk",
+"setup-dns",
+"setup-hostname",
+"setup-interfaces",
+"setup-keymap",
+"setup-lbu",
+"setup-mta",
+"setup-ntp",
+"setup-proxy",
+"setup-sshd",
+"setup-timezone",
+"setup-user",
+"setup-xen-dom0",
+"setup-xorg-base"
+]
+
+def is_linuxfs(mountpoint='/mnt'):
+	dirs=os.listdir(mountpoint)
+	linuxfs=True
+	for folder in linux_folders:
+		if folder not in dirs:
+			linuxfs=False
+			break
+	return linuxfs
+
+def is_alpine(mountpoint='/mnt'):
+	try:
+		setupFiles=os.listdir(mountpoint+"/sbin")
+		alpine=True
+		for script in alpine_scripts:
+			if script not in setupFiles:
+				alpine=False
+				break
+	except FileNotFoundError:
+		alpine=False
+	return alpine
+
+def is_debian(mountpoint='/mnt'):
+	debian=False
+	try:
+		files=os.listdir(mountpoint+"/etc")
+		debian='debian_version' in files
+	except FileNotFoundError:
+		debian=False
+	return debian
+
+def repairVBoxEFI():
+	result=s.run("./repair_vbox_efi",capture_output=True,text=True,shell=True)
+	
+
+
+result=s.run("lsblk -J -f -b -o NAME,PTTYPE,PATH,PARTTYPE,PARTTYPENAME,FSTYPE,UUID,SIZE /dev/sdb",capture_output=True,text=True,shell=True)
+raw=json.loads(result.stdout)
+for partition in raw["blockdevices"][0]["children"]:
+	if partition["fstype"] in ['ext4','vfat','nfts']:
+		result=s.run(["mount",partition['path'],"/mnt"],capture_output=True,text=True)
+		partition['used_bytes']=shutil.disk_usage('/mnt').used
+		partition['free_bytes']=shutil.disk_usage('/mnt').free
+		partition['is_linuxfs']=is_linuxfs('/mnt')
+		if partition['is_linuxfs']:
+			shutil.copy("tests.sh", "/mnt/root/tests.sh")
+		partition['is_alpine']=is_alpine('/mnt')
+		partition['is_debian']=is_debian('/mnt')
+		if partition['parttypename']=="EFI System":
+			repairVBoxEFI()
+		result=s.run(["umount","/mnt"],capture_output=True,text=True)
+
+print(json.dumps(raw,indent=3))
+

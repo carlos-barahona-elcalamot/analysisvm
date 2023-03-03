@@ -1,0 +1,10 @@
+#!/bin/bash
+
+vbox_correct_efi_boot () {
+	if [ ! -f /mnt/EFI/boot/bootx64.efi ]; then 
+		mkdir -p /mnt/EFI/boot
+		cp $( find /mnt -name grub*.efi | head -n 1 ) /mnt/EFI/boot/bootx64.efi
+	fi
+}
+
+vbox_correct_efi_boot
