@@ -137,7 +137,7 @@ def analyzeHdd(vmName, sshKey, vbox, sshPort=8022, vmAnalysis="AnalisisVMs"):
     machine = vbox.findMachine(vmName)
     results = []
     for medi in machine.getMediumAttachments():
-        print("Medi: "+str(medi.medium)+"  Type: "+str(medi.type))
+        # print("Medi: "+str(medi.medium)+"  Type: "+str(medi.type))
         if medi.type == 3:
             vmAnalysisSess = vboxMgr.openMachineSession(vmAnalysisOrig)
             vmAnalysis = vmAnalysisSess.machine
@@ -227,7 +227,6 @@ def runSystemTests(vmName:str):
 
     return resultat_test    
 
-
 def bootStudentVM(vmName, nSystem):
 
     print("Trying to boot "+vmName+" sytem "+str(nSystem))
@@ -301,15 +300,23 @@ def hddsStudent(student: Student, sshKey, vbox, sshPort=8022, vmAnalysis="Analis
                     student.vmName, sshKey, vbox, sshPort, vmAnalysis)
 
 def systemsStudent(student: Student):
-    student.systems=[]
+    student.systems={}
     if student.vmName != None and student.vmName != "":
         for i in range(5):
             try:
-                student.systems.append( bootStudentVM(student.vmName,i))
+                rawSystems= bootStudentVM(student.vmName,i)
+                if "root_dev" in rawSystems:
+                    student.systems[rawSystems["root_dev"]]=rawSystems
+                else:
+                    print("ERROR booting option "+str(i))
+                    print(rawSystems)
+                    print("-"*10)
             except Exception as e:
-                student.systems.append( {"error": str(e)})
+                    print("EXCEPTION booting option "+str(i))
+                    print(str(e))
+                    print("-"*10)
     else:
-        student.systems=[]
+        student.systems={}
 
 
 parser = argparse.ArgumentParser(
