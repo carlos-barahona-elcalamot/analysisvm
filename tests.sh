@@ -33,10 +33,12 @@ checkuser() {
 
 es_tiny=0
 es_alpine=0
+es_debian=0
 spanish_keyboard=0
 spanish_time=0
 uname -a | grep -q tinycore && es_tiny=1
 uname -a | grep -q Alpine && es_alpine=1
+uname -a | grep -q Debian && es_debian=1
 
 
 if [ $es_tiny -eq 0 ]; then 
@@ -76,6 +78,7 @@ echo "   \"home_dev\" : \"$home_dev\"," | tee /dev/ttyS0
 echo "   \"opt_dev\" : \"$opt_dev\"," | tee /dev/ttyS0
 echo "   \"es_tiny\" : $es_tiny," | tee /dev/ttyS0
 echo "   \"es_alpine\" : $es_alpine," | tee /dev/ttyS0
+echo "   \"es_debian\" : $es_debian," | tee /dev/ttyS0
 echo "   \"spanish_kbd\" : $spanish_keyboard," | tee /dev/ttyS0
 echo "   \"spanish_time\" : $spanish_time," | tee /dev/ttyS0
 echo "   \"users\" : { " | tee /dev/ttyS0
