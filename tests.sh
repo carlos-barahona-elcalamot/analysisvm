@@ -40,6 +40,16 @@ uname -a | grep -q tinycore && es_tiny=1
 uname -a | grep -q Alpine && es_alpine=1
 uname -a | grep -q Debian && es_debian=1
 
+if [ $es_tiny -eq 1 ]; then
+    distribution="tiny"
+elif [ $es_alpine -eq 1 ]; then
+    distribution="alpine"
+elif [ $es_debian -eq 1 ]; then
+    distribution="debian"
+else
+    distribution="linux"
+fi
+
 
 if [ $es_tiny -eq 0 ]; then 
     root_dev=$( mount | grep -Eoe '/dev/[a-zA-Z0-9]* on / .*' | cut -d ' ' -f 1 )
@@ -79,6 +89,7 @@ echo "   \"opt_dev\" : \"$opt_dev\"," | tee /dev/ttyS0
 echo "   \"es_tiny\" : $es_tiny," | tee /dev/ttyS0
 echo "   \"es_alpine\" : $es_alpine," | tee /dev/ttyS0
 echo "   \"es_debian\" : $es_debian," | tee /dev/ttyS0
+echo "   \"distribution\" : $distribution," tee /dev/ttyS0
 echo "   \"spanish_kbd\" : $spanish_keyboard," | tee /dev/ttyS0
 echo "   \"spanish_time\" : $spanish_time," | tee /dev/ttyS0
 echo "   \"users\" : { " | tee /dev/ttyS0
