@@ -89,7 +89,7 @@ echo "   \"opt_dev\" : \"$opt_dev\"," | tee /dev/ttyS0
 echo "   \"es_tiny\" : $es_tiny," | tee /dev/ttyS0
 echo "   \"es_alpine\" : $es_alpine," | tee /dev/ttyS0
 echo "   \"es_debian\" : $es_debian," | tee /dev/ttyS0
-echo "   \"distribution\" : $distribution," | tee /dev/ttyS0
+echo "   \"distribution\" : \"$distribution\"," | tee /dev/ttyS0
 echo "   \"spanish_kbd\" : $spanish_keyboard," | tee /dev/ttyS0
 echo "   \"spanish_time\" : $spanish_time," | tee /dev/ttyS0
 echo "   \"users\" : { " | tee /dev/ttyS0
