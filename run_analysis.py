@@ -49,11 +49,6 @@ def readStudentsFile(csvFilePath):
     return studentsMap
 
 
-def saveStudentRecords(students, recordsFile):
-    json.dump({id: student.toJSON() for id, student in students.items()}, open(
-        recordsFile, 'w'), indent=3, ensure_ascii=False)
-
-
 def selectStudent(studentsList, ovafile: str) -> str:
     print("-"*30)
     print("List of students: ")

@@ -11,7 +11,9 @@ class Student:
         self.ovafile = ""
         self.vmName = ""
         self.hdds = []
-        self.systems = []
+        self.systems = {}
+        self.tests = {}
+        self.grades = {}
 
     @classmethod
     def fromJSON(cls, jsonData):
@@ -25,6 +27,11 @@ class Student:
             newStudent.hdds = jsonData["hdds"]
         if "systems" in jsonData:
             newStudent.systems = jsonData["systems"]
+        if "tests" in jsonData:
+            newStudent.tests = jsonData["tests"]
+        if "grades" in jsonData:
+            newStudent.grades = jsonData["grades"]
+
         return newStudent
 
     def __str__(self):
@@ -38,7 +45,9 @@ class Student:
             "ovafile": self.ovafile,
             "vmName": self.vmName,
             "hdds": self.hdds,
-            "systems": self.systems
+            "systems": self.systems,
+            "tests" : self.tests,
+            "grades" : self.grades
         }
 
 
@@ -46,4 +55,9 @@ class Student:
 def readStudentsJSON(recordsFile: str):
     data = json.load(open(recordsFile, "r"))
     return {id: Student.fromJSON(student) for id, student in data.items()}
+
+
+def saveStudentRecords(students, recordsFile):
+    json.dump({id: student.toJSON() for id, student in students.items()}, open(
+        recordsFile, 'w'), indent=3, ensure_ascii=False)
 
